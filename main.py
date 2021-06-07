@@ -3,11 +3,21 @@ from discord.ext import commands
 import joke as getJoke
 import createEmbed
 import createAscii
+import asyncpraw
+import random
 
 from dotenv import load_dotenv
 load_dotenv()
 token = os.environ['Token']
+client_id=os.environ['client_id']
+client_secret=os.environ['client_secret']
 
+reddit = asyncpraw.Reddit(
+    client_id=client_id,
+    client_secret=client_secret,
+    user_agent="discordBot",
+)
+print(client_id)
 
 bot=commands.Bot(command_prefix= '$')
 
@@ -49,9 +59,25 @@ async def on_ready():
     for item in gen():
         print(item)
 
-@bot.event
-async def on_member_join(member):
-    print("f{member} has joined")
+# @bot.event
+# async def on_member_join(member):
+#     print("f{member} has joined")
+
+@bot.command()
+async def ecchi(ctx,*args):
+  subreddit= await reddit.subreddit("ecchi")
+  save=[]
+  async for submission in subreddit.hot(limit=50):
+    save.append(submission.url)
+  await ctx.send(save[random.randint(0,50)])
+  
+@bot.command()
+async def yuri(ctx,*args):
+  subreddit= await reddit.subreddit("yuri")
+  save=[]
+  async for submission in subreddit.hot(limit=50):
+    save.append(submission.url)
+  await ctx.send(save[random.randint(0,50)])
     
 
 
